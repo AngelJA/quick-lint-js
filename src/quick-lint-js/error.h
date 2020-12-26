@@ -20,10 +20,10 @@
 #include <iosfwd>
 #include <quick-lint-js/char8.h>
 #include <quick-lint-js/cli-location.h>
+#include <quick-lint-js/gmo.h>
 #include <quick-lint-js/language.h>
 #include <quick-lint-js/lex.h>
 #include <quick-lint-js/location.h>
-#include <quick-lint-js/translation.h>
 
 #define QLJS_X_ERROR_TYPES                                                     \
   QLJS_ERROR_TYPE(                                                             \
@@ -32,13 +32,13 @@
         identifier assignment;                                                 \
         identifier declaration;                                                \
       },                                                                       \
-      .error(QLJS_TRANSLATE("variable assigned before its declaration"),       \
+      .error("variable assigned before its declaration"_gmo_message,       \
              assignment)                                                       \
-          .note(QLJS_TRANSLATE("variable declared here"), declaration))        \
+          .note("variable declared here"_gmo_message, declaration))        \
                                                                                \
   QLJS_ERROR_TYPE(                                                             \
       error_assignment_to_const_global_variable, { identifier assignment; },   \
-      .error(QLJS_TRANSLATE("assignment to const global variable"),            \
+      .error("assignment to const global variable"_gmo_message,            \
              assignment))                                                      \
                                                                                \
   QLJS_ERROR_TYPE(                                                             \
@@ -48,8 +48,8 @@
         identifier assignment;                                                 \
         variable_kind var_kind;                                                \
       },                                                                       \
-      .error(QLJS_TRANSLATE("assignment to const variable"), assignment)       \
-          .note(QLJS_TRANSLATE("const variable declared here"), declaration))  \
+      .error("assignment to const variable"_gmo_message, assignment)       \
+          .note("const variable declared here"_gmo_message, declaration))  \
                                                                                \
   QLJS_ERROR_TYPE(                                                             \
       error_assignment_to_const_variable_before_its_declaration,               \
@@ -58,151 +58,148 @@
         identifier assignment;                                                 \
         variable_kind var_kind;                                                \
       },                                                                       \
-      .error(QLJS_TRANSLATE(                                                   \
-                 "assignment to const variable before its declaration"),       \
+      .error("assignment to const variable before its declaration"_gmo_message,       \
              assignment)                                                       \
-          .note(QLJS_TRANSLATE("const variable declared here"), declaration))  \
+          .note("const variable declared here"_gmo_message, declaration))  \
                                                                                \
   QLJS_ERROR_TYPE(                                                             \
       error_assignment_to_undeclared_variable, { identifier assignment; },     \
-      .error(QLJS_TRANSLATE("assignment to undeclared variable"), assignment)) \
+      .error("assignment to undeclared variable"_gmo_message, assignment)) \
                                                                                \
   QLJS_ERROR_TYPE(                                                             \
       error_big_int_literal_contains_decimal_point,                            \
       { source_code_span where; },                                             \
-      .error(QLJS_TRANSLATE("BigInt literal contains decimal point"), where))  \
+      .error("BigInt literal contains decimal point"_gmo_message, where))  \
                                                                                \
   QLJS_ERROR_TYPE(                                                             \
       error_big_int_literal_contains_exponent, { source_code_span where; },    \
-      .error(QLJS_TRANSLATE("BigInt literal contains exponent"), where))       \
+      .error("BigInt literal contains exponent"_gmo_message, where))       \
                                                                                \
   QLJS_ERROR_TYPE(                                                             \
       error_cannot_declare_class_named_let, { source_code_span name; },        \
-      .error(QLJS_TRANSLATE("classes cannot be named 'let'"), name))           \
+      .error("classes cannot be named 'let'"_gmo_message, name))           \
                                                                                \
   QLJS_ERROR_TYPE(                                                             \
       error_cannot_declare_variable_named_let_with_let,                        \
       { source_code_span name; },                                              \
-      .error(QLJS_TRANSLATE(                                                   \
-                 "let statement cannot declare variables named 'let'"),        \
+      .error("let statement cannot declare variables named 'let'"_gmo_message,        \
              name))                                                            \
                                                                                \
   QLJS_ERROR_TYPE(                                                             \
       error_cannot_export_let, { source_code_span export_name; },              \
-      .error(QLJS_TRANSLATE("cannot export variable named 'let'"),             \
+      .error("cannot export variable named 'let'"_gmo_message,             \
              export_name))                                                     \
                                                                                \
   QLJS_ERROR_TYPE(                                                             \
       error_cannot_import_let, { source_code_span import_name; },              \
-      .error(QLJS_TRANSLATE("cannot import 'let'"), import_name))              \
+      .error("cannot import 'let'"_gmo_message, import_name))              \
                                                                                \
   QLJS_ERROR_TYPE(                                                             \
       error_character_disallowed_in_identifiers,                               \
       { source_code_span character; },                                         \
-      .error(QLJS_TRANSLATE("character is not allowed in identifiers"),        \
+      .error("character is not allowed in identifiers"_gmo_message,        \
              character))                                                       \
                                                                                \
   QLJS_ERROR_TYPE(                                                             \
       error_escaped_character_disallowed_in_identifiers,                       \
       { source_code_span escape_sequence; },                                   \
       .error(                                                                  \
-          QLJS_TRANSLATE("escaped character is not allowed in identifiers"),   \
+          "escaped character is not allowed in identifiers"_gmo_message,   \
           escape_sequence))                                                    \
                                                                                \
   QLJS_ERROR_TYPE(                                                             \
       error_escaped_code_point_in_identifier_out_of_range,                     \
       { source_code_span escape_sequence; },                                   \
-      .error(QLJS_TRANSLATE("code point out of range"), escape_sequence))      \
+      .error("code point out of range"_gmo_message, escape_sequence))      \
                                                                                \
   QLJS_ERROR_TYPE(                                                             \
       error_expected_expression_before_newline, { source_code_span where; },   \
-      .error(QLJS_TRANSLATE("expected expression before newline"), where))     \
+      .error("expected expression before newline"_gmo_message, where))     \
                                                                                \
   QLJS_ERROR_TYPE(                                                             \
       error_expected_expression_before_semicolon, { source_code_span where; }, \
-      .error(QLJS_TRANSLATE("expected expression before semicolon"), where))   \
+      .error("expected expression before semicolon"_gmo_message, where))   \
                                                                                \
   QLJS_ERROR_TYPE(                                                             \
       error_expected_hex_digits_in_unicode_escape,                             \
       { source_code_span escape_sequence; },                                   \
-      .error(QLJS_TRANSLATE(                                                   \
-                 "expected hexadecimal digits in Unicode escape sequence"),    \
+      .error("expected hexadecimal digits in Unicode escape sequence"_gmo_message,    \
              escape_sequence))                                                 \
                                                                                \
   QLJS_ERROR_TYPE(                                                             \
       error_invalid_binding_in_let_statement, { source_code_span where; },     \
-      .error(QLJS_TRANSLATE("invalid binding in let statement"), where))       \
+      .error("invalid binding in let statement"_gmo_message, where))       \
                                                                                \
   QLJS_ERROR_TYPE(                                                             \
       error_invalid_expression_left_of_assignment,                             \
       { source_code_span where; },                                             \
-      .error(QLJS_TRANSLATE("invalid expression left of assignment"), where))  \
+      .error("invalid expression left of assignment"_gmo_message, where))  \
                                                                                \
   QLJS_ERROR_TYPE(                                                             \
       error_invalid_lone_literal_in_object_literal,                            \
       { source_code_span where; },                                             \
-      .error(QLJS_TRANSLATE("invalid lone literal in object literal"), where)) \
+      .error("invalid lone literal in object literal"_gmo_message, where)) \
                                                                                \
   QLJS_ERROR_TYPE(                                                             \
       error_invalid_utf_8_sequence, { source_code_span sequence; },            \
-      .error(QLJS_TRANSLATE("invalid UTF-8 sequence"), sequence))              \
+      .error("invalid UTF-8 sequence"_gmo_message, sequence))              \
                                                                                \
   QLJS_ERROR_TYPE(                                                             \
       error_keywords_cannot_contain_escape_sequences,                          \
       { source_code_span escape_sequence; },                                   \
-      .error(QLJS_TRANSLATE("keywords cannot contain escape sequences"),       \
+      .error("keywords cannot contain escape sequences"_gmo_message,       \
              escape_sequence))                                                 \
                                                                                \
   QLJS_ERROR_TYPE(                                                             \
       error_let_with_no_bindings, { source_code_span where; },                 \
-      .error(QLJS_TRANSLATE("let with no bindings"), where))                   \
+      .error("let with no bindings"_gmo_message, where))                   \
                                                                                \
   QLJS_ERROR_TYPE(                                                             \
       error_missing_comma_between_object_literal_entries,                      \
       { source_code_span where; },                                             \
-      .error(QLJS_TRANSLATE("missing comma between object literal entries"),   \
+      .error("missing comma between object literal entries"_gmo_message,   \
              where))                                                           \
                                                                                \
   QLJS_ERROR_TYPE(                                                             \
       error_missing_operand_for_operator, { source_code_span where; },         \
-      .error(QLJS_TRANSLATE("missing operand for operator"), where))           \
+      .error("missing operand for operator"_gmo_message, where))           \
                                                                                \
   QLJS_ERROR_TYPE(                                                             \
       error_missing_semicolon_after_expression, { source_code_span where; },   \
-      .error(QLJS_TRANSLATE("missing semicolon after expression"), where))     \
+      .error("missing semicolon after expression"_gmo_message, where))     \
                                                                                \
   QLJS_ERROR_TYPE(                                                             \
       error_number_literal_contains_consecutive_underscores,                   \
       { source_code_span underscores; },                                       \
       .error(                                                                  \
-          QLJS_TRANSLATE("number literal contains consecutive underscores"),   \
+          "number literal contains consecutive underscores"_gmo_message,   \
           underscores))                                                        \
                                                                                \
   QLJS_ERROR_TYPE(                                                             \
       error_number_literal_contains_trailing_underscores,                      \
       { source_code_span underscores; },                                       \
-      .error(u8"number literal contains trailing underscore(s)", underscores)) \
+      .error("number literal contains trailing underscore(s)"_gmo_message, underscores)) \
                                                                                \
   QLJS_ERROR_TYPE(                                                             \
       error_octal_literal_may_not_have_exponent,                               \
       { source_code_span characters; },                                        \
-      .error(QLJS_TRANSLATE("octal literal may not have exponent"),            \
+      .error("octal literal may not have exponent"_gmo_message,            \
              characters))                                                      \
                                                                                \
   QLJS_ERROR_TYPE(                                                             \
       error_octal_literal_may_not_have_decimal,                                \
       { source_code_span characters; },                                        \
-      .error(QLJS_TRANSLATE("octal literal may not have decimal"),             \
+      .error("octal literal may not have decimal"_gmo_message,             \
              characters))                                                      \
                                                                                \
   QLJS_ERROR_TYPE(                                                             \
       error_octal_literal_may_not_be_big_int,                                  \
       { source_code_span characters; },                                        \
-      .error(QLJS_TRANSLATE("octal literal may not be BigInt"), characters))   \
+      .error("octal literal may not be BigInt"_gmo_message, characters))   \
                                                                                \
   QLJS_ERROR_TYPE(                                                             \
       error_redeclaration_of_global_variable, { identifier redeclaration; },   \
-      .error(QLJS_TRANSLATE("redeclaration of global variable"),               \
+      .error("redeclaration of global variable"_gmo_message,               \
              redeclaration))                                                   \
                                                                                \
   QLJS_ERROR_TYPE(                                                             \
@@ -211,111 +208,111 @@
         identifier redeclaration;                                              \
         identifier original_declaration;                                       \
       },                                                                       \
-      .error(QLJS_TRANSLATE("redeclaration of variable: {0}"), redeclaration)  \
-          .note(QLJS_TRANSLATE("variable already declared here"),              \
+      .error("redeclaration of variable: {0}"_gmo_message, redeclaration)  \
+          .note("variable already declared here"_gmo_message,              \
                 original_declaration))                                         \
                                                                                \
   QLJS_ERROR_TYPE(                                                             \
       error_regexp_literal_flags_cannot_contain_unicode_escapes,               \
       { source_code_span escape_sequence; },                                   \
-      .error(QLJS_TRANSLATE("RegExp literal cannot contain Unicode escapes"),  \
+      .error("RegExp literal cannot contain Unicode escapes"_gmo_message,  \
              escape_sequence))                                                 \
                                                                                \
   QLJS_ERROR_TYPE(                                                             \
       error_stray_comma_in_let_statement, { source_code_span where; },         \
-      .error(QLJS_TRANSLATE("stray comma in let statement"), where))           \
+      .error("stray comma in let statement"_gmo_message, where))           \
                                                                                \
   QLJS_ERROR_TYPE(                                                             \
       error_unclosed_block_comment, { source_code_span comment_open; },        \
-      .error(QLJS_TRANSLATE("unclosed block comment"), comment_open))          \
+      .error("unclosed block comment"_gmo_message, comment_open))          \
                                                                                \
   QLJS_ERROR_TYPE(                                                             \
       error_unclosed_identifier_escape_sequence,                               \
       { source_code_span escape_sequence; },                                   \
-      .error(QLJS_TRANSLATE("unclosed identifier escape sequence"),            \
+      .error("unclosed identifier escape sequence"_gmo_message,            \
              escape_sequence))                                                 \
                                                                                \
   QLJS_ERROR_TYPE(                                                             \
       error_unclosed_regexp_literal, { source_code_span regexp_literal; },     \
-      .error(QLJS_TRANSLATE("unclosed regexp literal"), regexp_literal))       \
+      .error("unclosed regexp literal"_gmo_message, regexp_literal))       \
                                                                                \
   QLJS_ERROR_TYPE(                                                             \
       error_unclosed_string_literal, { source_code_span string_literal; },     \
-      .error(QLJS_TRANSLATE("unclosed string literal"), string_literal))       \
+      .error("unclosed string literal"_gmo_message, string_literal))       \
                                                                                \
   QLJS_ERROR_TYPE(                                                             \
       error_unclosed_template, { source_code_span incomplete_template; },      \
-      .error(QLJS_TRANSLATE("unclosed template"), incomplete_template))        \
+      .error("unclosed template"_gmo_message, incomplete_template))        \
                                                                                \
   QLJS_ERROR_TYPE(                                                             \
       error_unexpected_at_character, { source_code_span character; },          \
-      .error(QLJS_TRANSLATE("unexpected '@'"), character))                     \
+      .error("unexpected '@'"_gmo_message, character))                     \
                                                                                \
   QLJS_ERROR_TYPE(                                                             \
       error_unexpected_backslash_in_identifier,                                \
       { source_code_span backslash; },                                         \
-      .error(QLJS_TRANSLATE("unexpected '\\' in identifier"), backslash))      \
+      .error("unexpected '\\' in identifier"_gmo_message, backslash))      \
                                                                                \
   QLJS_ERROR_TYPE(                                                             \
       error_unexpected_characters_in_number, { source_code_span characters; }, \
-      .error(QLJS_TRANSLATE("unexpected characters in number literal"),        \
+      .error("unexpected characters in number literal"_gmo_message,        \
              characters))                                                      \
                                                                                \
   QLJS_ERROR_TYPE(                                                             \
       error_unexpected_control_character, { source_code_span character; },     \
-      .error(QLJS_TRANSLATE("unexpected control character"), character))       \
+      .error("unexpected control character"_gmo_message, character))       \
                                                                                \
   QLJS_ERROR_TYPE(                                                             \
       error_unexpected_characters_in_binary_number,                            \
       { source_code_span characters; },                                        \
-      .error(QLJS_TRANSLATE("unexpected characters in binary literal"),        \
+      .error("unexpected characters in binary literal"_gmo_message,        \
              characters))                                                      \
                                                                                \
   QLJS_ERROR_TYPE(                                                             \
       error_unexpected_characters_in_octal_number,                             \
       { source_code_span characters; },                                        \
-      .error(QLJS_TRANSLATE("unexpected characters in octal literal"),         \
+      .error("unexpected characters in octal literal"_gmo_message,         \
              characters))                                                      \
                                                                                \
   QLJS_ERROR_TYPE(                                                             \
       error_unexpected_characters_in_hex_number,                               \
       { source_code_span characters; },                                        \
-      .error(QLJS_TRANSLATE("unexpected characters in hex literal"),           \
+      .error("unexpected characters in hex literal"_gmo_message,           \
              characters))                                                      \
                                                                                \
   QLJS_ERROR_TYPE(                                                             \
       error_no_digits_in_binary_number, { source_code_span characters; },      \
-      .error(QLJS_TRANSLATE("binary number literal has no digits"),            \
+      .error("binary number literal has no digits"_gmo_message,            \
              characters))                                                      \
                                                                                \
   QLJS_ERROR_TYPE(                                                             \
       error_no_digits_in_hex_number, { source_code_span characters; },         \
-      .error(QLJS_TRANSLATE("hex number literal has no digits"), characters))  \
+      .error("hex number literal has no digits"_gmo_message, characters))  \
                                                                                \
   QLJS_ERROR_TYPE(                                                             \
       error_no_digits_in_octal_number, { source_code_span characters; },       \
-      .error(QLJS_TRANSLATE("octal number literal has no digits"),             \
+      .error("octal number literal has no digits"_gmo_message,             \
              characters))                                                      \
                                                                                \
   QLJS_ERROR_TYPE(                                                             \
       error_unexpected_hash_character, { source_code_span where; },            \
-      .error(QLJS_TRANSLATE("unexpected '#'"), where))                         \
+      .error("unexpected '#'"_gmo_message, where))                         \
                                                                                \
   QLJS_ERROR_TYPE(                                                             \
       error_unexpected_identifier, { source_code_span where; },                \
-      .error(QLJS_TRANSLATE("unexpected identifier"), where))                  \
+      .error("unexpected identifier"_gmo_message, where))                  \
                                                                                \
   QLJS_ERROR_TYPE(                                                             \
       error_unmatched_indexing_bracket, { source_code_span left_square; },     \
-      .error(QLJS_TRANSLATE("unmatched indexing bracket"), left_square))       \
+      .error("unmatched indexing bracket"_gmo_message, left_square))       \
                                                                                \
   QLJS_ERROR_TYPE(                                                             \
       error_unmatched_parenthesis, { source_code_span where; },                \
-      .error(QLJS_TRANSLATE("unmatched parenthesis"), where))                  \
+      .error("unmatched parenthesis"_gmo_message, where))                  \
                                                                                \
   QLJS_ERROR_TYPE(                                                             \
       error_use_of_undeclared_variable, { identifier name; },                  \
-      .error(QLJS_TRANSLATE("use of undeclared variable: {0}"), name))         \
+      .error("use of undeclared variable: {0}"_gmo_message, name))         \
                                                                                \
   QLJS_ERROR_TYPE(                                                             \
       error_variable_used_before_declaration,                                  \
@@ -323,8 +320,8 @@
         identifier use;                                                        \
         identifier declaration;                                                \
       },                                                                       \
-      .error(QLJS_TRANSLATE("variable used before declaration: {0}"), use)     \
-          .note(QLJS_TRANSLATE("variable declared here"), declaration))        \
+      .error("variable used before declaration: {0}"_gmo_message, use)     \
+          .note("variable declared here"_gmo_message, declaration))        \
   /* END */
 
 namespace quick_lint_js {
