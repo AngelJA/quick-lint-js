@@ -14,29 +14,35 @@
 // You should have received a copy of the GNU General Public License
 // along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
-#ifndef QUICK_LINT_JS_LSP_DOCUMENT_H
-#define QUICK_LINT_JS_LSP_DOCUMENT_H
+let { createParserAsync } = require("./quick-lint-js.js");
+let fs = require("fs");
 
-#include <quick-lint-js/char8.h>
-#include <quick-lint-js/lsp-location.h>
-#include <quick-lint-js/padded-string.h>
+async function main() {
+  let fileName = process.argv[2];
+  let fileContent = fs.readFileSync(fileName, "utf-8");
 
-namespace quick_lint_js {
-class lsp_document {
- public:
-  explicit lsp_document();
+  let parser = await createParserAsync();
+  try {
+    parser.replaceText(
+      {
+        start: { line: 0, character: 0 },
+        end: { line: 0, character: 0 },
+      },
+      fileContent
+    );
+    let diagnostics = parser.lint();
 
-  void set_text(string8_view new_text);
-  void replace_text(lsp_range range, string8_view replacement_text);
-
-  padded_string_view string() noexcept;
-  const lsp_locator& locator() noexcept;
-
- private:
-  int active_content_buffer_ = 0;
-  padded_string content_buffers_[2];
-  lsp_locator locator_;
-};
+    for (let diag of diagnostics) {
+      console.log(
+        `${diag.startLine}:${diag.startCharacter}-${diag.endLine}:${diag.endCharacter}: error: ${diag.message}`
+      );
+    }
+  } finally {
+    parser.dispose();
+  }
 }
 
-#endif
+main().catch((error) => {
+  console.error(error.stack);
+  process.exit(1);
+});

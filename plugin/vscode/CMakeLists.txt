@@ -1,0 +1,45 @@
+# quick-lint-js finds bugs in JavaScript programs.
+# Copyright (C) 2020  Matthew Glazar
+#
+# This program is free software: you can redistribute it and/or modify
+# it under the terms of the GNU General Public License as published by
+# the Free Software Foundation, either version 3 of the License, or
+# (at your option) any later version.
+#
+# This program is distributed in the hope that it will be useful,
+# but WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+# GNU General Public License for more details.
+#
+# You should have received a copy of the GNU General Public License
+# along with this program.  If not, see <https://www.gnu.org/licenses/>.
+
+cmake_minimum_required(VERSION 3.10)
+include(QuickLintJSTarget)
+
+if (EMSCRIPTEN)
+  quick_lint_js_add_executable(quick-lint-js-vscode empty.cpp)
+  target_link_libraries(
+    quick-lint-js-vscode
+    PRIVATE
+    quick-lint-js-lib
+    "-sEXPORTED_FUNCTIONS='[\"_qljs_vscode_create_parser\",\"_qljs_vscode_destroy_parser\",\"_qljs_vscode_replace_text\",\"_qljs_vscode_lint\"]'"
+    "-sEXPORTED_RUNTIME_METHODS='[\"cwrap\",\"UTF8ToString\",\"lengthBytesUTF8\",\"stringToUTF8\",\"_malloc\",\"_free\"]'"
+    "-sMODULARIZE"
+    "-sEXPORT_NAME=QUICK_LINT_JS_VSCODE"
+  )
+
+  set(VSCODE_DIST_DIR dist)
+  install(
+    TARGETS quick-lint-js-vscode
+    RUNTIME
+    COMPONENT vscode
+    EXCLUDE_FROM_ALL
+    DESTINATION "${VSCODE_DIST_DIR}"
+  )
+  install(
+    PROGRAMS $<TARGET_FILE_DIR:quick-lint-js-vscode>/$<TARGET_FILE_PREFIX:quick-lint-js-vscode>$<TARGET_FILE_BASE_NAME:quick-lint-js-vscode>.wasm
+    DESTINATION "${VSCODE_DIST_DIR}"
+    COMPONENT vscode
+  )
+endif ()
