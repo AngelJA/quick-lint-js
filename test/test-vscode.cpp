@@ -32,7 +32,7 @@ TEST(test_vscode, lint_error_after_text_insertion) {
 
   const char8* document_text = u8"let x;let x;";
   qljs_vscode_replace_text(p, /*start_line=*/0, /*start_character=*/0,
-                           /*end_line=*/0, /*end_character=*/0, document_text,
+                           /*end_line=*/1, /*end_character=*/0, document_text,
                            strlen(document_text));
   const qljs_vscode_diagnostic* diagnostics = qljs_vscode_lint(p);
   EXPECT_NE(diagnostics[0].message, nullptr);
@@ -52,7 +52,7 @@ TEST(test_vscode, lint_new_error_after_second_text_insertion) {
 
   const char8* document_text = u8"let x;";
   qljs_vscode_replace_text(p, /*start_line=*/0, /*start_character=*/0,
-                           /*end_line=*/0, /*end_character=*/0, document_text,
+                           /*end_line=*/1, /*end_character=*/0, document_text,
                            strlen(document_text));
   const qljs_vscode_diagnostic* diagnostics = qljs_vscode_lint(p);
   EXPECT_EQ(diagnostics[0].message, nullptr);

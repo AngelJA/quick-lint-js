@@ -40,10 +40,10 @@ class Parser {
       );
       this._api._replaceText(
         this._parser,
-        0,
-        0,
-        0,
-        0,
+        range.start.line,
+        range.start.character,
+        range.end.line,
+        range.end.character,
         textUTF8Pointer,
         textUTF8Size
       );

@@ -3,9 +3,6 @@
 This directory contains a plugin for the [Visual Studio Code
 editor][VisualStudioCode].
 
-Important: The plugin does not actually exist yet. The plugin is a work in
-progress.
-
 ## Building
 
 To build the extension, install the [emscripten SDK][emscripten-sdk], [Ninja][],
@@ -16,9 +13,17 @@ and [Node.js][], then run the following commands:
     $ emmake ninja -C build-emscripten quick-lint-js-vscode
     $ emmake cmake --install build-emscripten --component vscode --prefix .
 
+Then, run the following command to create `vscode-quick-lint-js-0.1.0.vsix`:
+
+    $ npx vsce package
+
 ## Testing
 
-Run `cli.js` to manually test the extension:
+After [building](#Building), run `yarn test` to run the automated test suite.
+Packaging is not necessary to run `yarn test`.
+
+To manually test the extension's WebAssembly bindings, [build](#Building), then
+run `cli.js` :
 
     $ node plugin/vscode/cli.js PATH_TO_YOUR_JS_FILE.js
 
